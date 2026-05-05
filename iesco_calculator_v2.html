@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IESCO Multi-Tariff Bill Calculator</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-2: #1c232c;
+    --border: #2a3441;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-2: #7ee787;
+    --warn: #f0883e;
+    --danger: #ff7b72;
+    --good: #3fb950;
+    --row-alt: #11161d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 20px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Mono", Consolas, "Roboto Mono", monospace, "Segoe UI", sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  h1 { font-size: 18px; margin: 0 0 4px; letter-spacing: 0.3px; }
+  h2 { font-size: 11px; margin: 0 0 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .subtitle { color: var(--muted); font-size: 12px; }
+
+  /* Consumer category selector */
+  .selector-bar {
+    background: linear-gradient(135deg, var(--panel) 0%, #1f2733 100%);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 18px;
+  }
+  .selector-bar label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .selector-bar select {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .selector-bar select:focus { outline: none; border-color: var(--accent); }
+  .selector-bar select optgroup { color: var(--accent); font-weight: 600; }
+  .selector-bar select option { color: var(--text); background: var(--bg); padding: 4px; }
+  .category-info {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 4px;
+    border-left: 3px solid var(--accent);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .category-info strong { color: var(--accent-2); }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+  }
+  .panel + .panel { margin-top: 14px; }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 110px 60px;
+    gap: 8px;
+    align-items: center;
+    padding: 4px 0;
+  }
+  .row:hover { background: var(--row-alt); }
+  .row label { color: var(--text); font-size: 12.5px; }
+  .row .hint { color: var(--muted); font-size: 11px; display: block; margin-top: 1px; }
+  .row input, .row select {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12.5px;
+    text-align: right;
+    width: 100%;
+  }
+  .row input:focus, .row select:focus { outline: none; border-color: var(--accent); }
+  .row .unit { color: var(--muted); font-size: 11px; }
+  .row.disabled { opacity: 0.35; pointer-events: none; }
+
+  .out-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 4px 0;
+  }
+  .out-row.alt { background: var(--row-alt); padding: 4px 8px; border-radius: 3px; }
+  .out-row .label { color: var(--text); }
+  .out-row .label .formula { color: var(--muted); font-size: 11px; display: block; margin-top: 1px; }
+  .out-row .value { color: var(--text); font-variant-numeric: tabular-nums; font-weight: 500; }
+  .out-row.subtotal { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; font-weight: 600; }
+  .out-row.subtotal .value { color: var(--accent); }
+  .out-row.grand { border-top: 2px solid var(--accent); margin-top: 8px; padding-top: 10px; font-size: 14px; font-weight: 700; }
+  .out-row.grand .value { color: var(--accent-2); font-size: 15px; }
+  .out-row.late .value { color: var(--warn); }
+  .out-row.hidden { display: none; }
+  .out-row .negative { color: var(--good); }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .pill.match { background: rgba(63, 185, 80, 0.15); color: var(--good); border: 1px solid var(--good); }
+  .pill.warn  { background: rgba(240, 136, 62, 0.15); color: var(--warn); border: 1px solid var(--warn); }
+  .pill.cat   { background: rgba(88, 166, 255, 0.15); color: var(--accent); border: 1px solid var(--accent); }
+
+  .toolbar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  button {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 7px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button.primary { background: var(--accent); color: #0d1117; border-color: var(--accent); font-weight: 600; }
+  button.primary:hover { opacity: 0.9; }
+
+  /* Slab table for residential */
+  .slab-table { width: 100%; margin-top: 4px; }
+  .slab-table .slab-row {
+    display: grid;
+    grid-template-columns: 1fr 90px 90px;
+    gap: 6px;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .slab-table .slab-row:last-child { border-bottom: none; }
+  .slab-table input { background: var(--panel-2); border: 1px solid var(--border); color: var(--text); padding: 4px 6px; border-radius: 3px; font-family: inherit; font-size: 12px; text-align: right; width: 100%; }
+  .slab-table .slab-label { font-size: 11.5px; color: var(--muted); }
+
+  .section-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; margin: 12px 0 6px; font-weight: 600; }
+  .section-title:first-child { margin-top: 0; }
+
+  details { margin-top: 14px; }
+  details summary { cursor: pointer; color: var(--muted); font-size: 12px; padding: 5px 0; }
+  details summary:hover { color: var(--accent); }
+  .formulas { background: var(--panel-2); padding: 12px; border-radius: 4px; margin-top: 8px; font-size: 11.5px; line-height: 1.7; border: 1px solid var(--border); white-space: pre-wrap; }
+  .formulas code { color: var(--accent-2); }
+
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 12px;
+    background: var(--panel-2);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .compare > div { text-align: center; }
+  .compare .lbl { color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .compare .val { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .compare .diff.ok { color: var(--good); }
+  .compare .diff.bad { color: var(--danger); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>IESCO Multi-Tariff Bill Calculator</h1>
+    <div class="subtitle">All consumer categories · all rates editable · per NEPRA Schedule of Tariffs</div>
+  </div>
+  <div class="subtitle" id="status"><span class="pill cat" id="catPill">—</span></div>
+</div>
+
+<!-- TOP: Consumer Category Selector -->
+<div class="selector-bar">
+  <label>① Consumer Category / Tariff Code</label>
+  <select id="tariffSelect" onchange="onTariffChange()">
+    <optgroup label="A · Residential">
+      <option value="A1_LIFELINE">A-1a Lifeline — Protected ≤50 units</option>
+      <option value="A1_PROTECTED">A-1a Protected — ≤200 units (last 6 mo)</option>
+      <option value="A1_NON_PROTECTED">A-1a Non-Protected — Slab</option>
+      <option value="A1_TOU">A-1b ToU Residential</option>
+    </optgroup>
+    <optgroup label="A-2 · Commercial">
+      <option value="A2_FLAT">A-2a Commercial Flat (up to 5 kW)</option>
+      <option value="A2_TOU">A-2b Commercial ToU (above 5 kW)</option>
+    </optgroup>
+    <optgroup label="A-3 · General Services">
+      <option value="A3">A-3 General Services</option>
+    </optgroup>
+    <optgroup label="B · Industrial">
+      <option value="B1_FLAT">B-1 Industrial Flat (up to 25 kW)</option>
+      <option value="B1_TOU">B-1b Industrial ToU (up to 25 kW)</option>
+      <option value="B2_FLAT">B-2 Industrial Flat (25–500 kW)</option>
+      <option value="B2_TOU" selected>B-2b(12)T Industrial ToU (25–500 kW) — YOUR BILL</option>
+      <option value="B3_TOU">B-3 Industrial ToU (≤5000 kW @ 11/33 kV)</option>
+      <option value="B4_TOU">B-4 Industrial ToU (all loads @ 66/132 kV+)</option>
+    </optgroup>
+    <optgroup label="D · Agriculture">
+      <option value="D1">D-1 Agricultural Tubewells</option>
+      <option value="D2_TOU">D-2 Agricultural ToU</option>
+    </optgroup>
+    <optgroup label="Other">
+      <option value="G">G — Public Lighting</option>
+      <option value="TEMP">Temporary Supply</option>
+      <option value="EV">EV Charging Station</option>
+    </optgroup>
+  </select>
+  <div class="category-info" id="catInfo">Select a category to view rate basis and applicable taxes.</div>
+</div>
+
+<div class="toolbar">
+  <button class="primary" onclick="calculate()">Recalculate</button>
+  <button onclick="loadDefaults()">Load Default Rates for Selected Tariff</button>
+  <button onclick="loadSampleBill()">Load Your Nov-25 Bill (B2b ToU)</button>
+</div>
+
+<div class="grid">
+  <!-- LEFT: INPUTS -->
+  <div>
+    <div class="panel">
+      <h2>② Consumption Inputs</h2>
+
+      <!-- For slab tariffs -->
+      <div id="slabInputs">
+        <div class="row"><label>Total Units<span class="hint">monthly consumption</span></label><input id="totalUnits" type="number" step="any" value="350"><span class="unit">kWh</span></div>
+        <div class="row"><label>Connection Phase<span class="hint">single / three-phase fixed charge</span></label>
+          <select id="phase"><option value="single">Single (75)</option><option value="three">Three (150)</option></select>
+          <span class="unit"></span>
+        </div>
+      </div>
+
+      <!-- For flat tariffs -->
+      <div id="flatInputs" style="display:none">
+        <div class="row"><label>Total Units</label><input id="flatUnits" type="number" step="any" value="500"><span class="unit">kWh</span></div>
+      </div>
+
+      <!-- For ToU tariffs -->
+      <div id="touInputs">
+        <div class="row"><label>Off-Peak Units<span class="hint">T1 register</span></label><input id="opUnits" type="number" step="any" value="3882"><span class="unit">kWh</span></div>
+        <div class="row"><label>Peak Units<span class="hint">T2 register</span></label><input id="pkUnits" type="number" step="any" value="1727"><span class="unit">kWh</span></div>
+        <div class="row" id="mdiRow"><label>MDI<span class="hint">peak demand in kW</span></label><input id="mdi" type="number" step="any" value="43"><span class="unit">kW</span></div>
+      </div>
+
+      <div class="row"><label>Previous-month Units<span class="hint">for FPA back-calculation</span></label><input id="prevUnits" type="number" step="any" value="10843"><span class="unit">kWh</span></div>
+    </div>
+
+    <div class="panel">
+      <h2>③ Tariff Rates · Editable</h2>
+
+      <!-- Slab rate table for residential -->
+      <div id="slabRates" style="display:none">
+        <div class="section-title">Slab Rates (Rs/kWh) — applied incrementally</div>
+        <div class="slab-table" id="slabTable"></div>
+      </div>
+
+      <!-- Flat rate -->
+      <div id="flatRate" style="display:none">
+        <div class="row"><label>Flat Energy Rate</label><input id="rFlat" type="number" step="any" value="41.79"><span class="unit">Rs/kWh</span></div>
+      </div>
+
+      <!-- ToU rates -->
+      <div id="touRates">
+        <div class="row"><label>Off-Peak Energy Rate</label><input id="rOP" type="number" step="any" value="27.41"><span class="unit">Rs/kWh</span></div>
+        <div class="row"><label>Peak Energy Rate</label><input id="rPK" type="number" step="any" value="36.68"><span class="unit">Rs/kWh</span></div>
+      </div>
+
+      <div class="section-title">Fixed Charges</div>
+      <div class="row" id="fixedFlatRow"><label>Fixed Charge<span class="hint" id="fixedHint">per month</span></label><input id="rFixedAmt" type="number" step="any" value="0"><span class="unit">Rs</span></div>
+      <div class="row" id="fixedMdiRow"><label>Fixed Rate per kW (MDI)<span class="hint">applied on MDI</span></label><input id="rFixedKw" type="number" step="any" value="1250"><span class="unit">Rs/kW</span></div>
+
+      <div class="section-title">Adjustments</div>
+      <div class="row"><label>FPA Rate (notified)<span class="hint">applies to prev-month units</span></label><input id="rFPA" type="number" step="any" value="-0.4812"><span class="unit">Rs/kWh</span></div>
+      <div class="row"><label>Quarterly Tariff Adj (QTA)</label><input id="rQTA" type="number" step="any" value="-0.7918"><span class="unit">Rs/kWh</span></div>
+    </div>
+
+    <div class="panel">
+      <h2>④ Surcharges &amp; Taxes · Editable</h2>
+
+      <div class="section-title">Per-unit Surcharges</div>
+      <div class="row"><label>FC Surcharge</label><input id="rFC" type="number" step="any" value="3.23"><span class="unit">Rs/kWh</span></div>
+      <div class="row"><label>N.J. Surcharge</label><input id="rNJ" type="number" step="any" value="0"><span class="unit">Rs/kWh</span></div>
+
+      <div class="section-title">Tax Rates (% of taxable base)</div>
+      <div class="row"><label>GST / Sales Tax</label><input id="rGST" type="number" step="any" value="18"><span class="unit">%</span></div>
+      <div class="row"><label>Further Tax<span class="hint">non-active filers</span></label><input id="rFT" type="number" step="any" value="4"><span class="unit">%</span></div>
+      <div class="row"><label>Extra Tax<span class="hint">unregistered, slab-based</span></label><input id="rET" type="number" step="any" value="17"><span class="unit">%</span></div>
+      <div class="row"><label>Income Tax<span class="hint">filer 5% · non-filer 7.5%+</span></label><input id="rIT" type="number" step="any" value="7.35"><span class="unit">%</span></div>
+      <div class="row"><label>Electricity Duty<span class="hint">on energy charges</span></label><input id="rED" type="number" step="any" value="0"><span class="unit">%</span></div>
+      <div class="row"><label>TV Fee (residential)</label><input id="rTV" type="number" step="any" value="0"><span class="unit">Rs</span></div>
+
+      <div class="row"><label>Apply taxes on FPA?<span class="hint">propagates GST/IT/FT/ET to FPA</span></label>
+        <input id="taxFPA" type="checkbox" checked style="width:auto;height:16px">
+        <span class="unit"></span>
+      </div>
+
+      <div class="section-title">Late Payment Surcharge</div>
+      <div class="row"><label>LPS (within window)</label><input id="rLPS1" type="number" step="any" value="3.49"><span class="unit">%</span></div>
+      <div class="row"><label>LPS (after window)</label><input id="rLPS2" type="number" step="any" value="6.99"><span class="unit">%</span></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: OUTPUTS -->
+  <div>
+    <div class="panel">
+      <h2>IESCO Charges (Energy + Demand)</h2>
+      <div id="energyBreakdown"></div>
+      <div class="out-row alt"><div class="label">Energy Charges (subtotal)</div><span class="value" id="oEnergy">—</span></div>
+      <div class="out-row"><div class="label">Fixed Charges<span class="formula" id="fixedFormula">—</span></div><span class="value" id="oFixed">—</span></div>
+      <div class="out-row alt"><div class="label">Variable FPA<span class="formula">prev-month units × FPA rate</span></div><span class="value" id="oVarFPA">—</span></div>
+      <div class="out-row"><div class="label">QTR Tariff Adj<span class="formula">current units × QTA rate</span></div><span class="value" id="oQTA">—</span></div>
+      <div class="out-row subtotal"><div class="label">IESCO Subtotal</div><span class="value" id="oIescoSub">—</span></div>
+    </div>
+
+    <div class="panel">
+      <h2>Government Charges</h2>
+      <div class="out-row"><div class="label">Taxable Base<span class="formula">Energy + Fixed + QTA + FC Surcharge</span></div><span class="value" id="oTaxBase">—</span></div>
+      <div class="out-row alt"><div class="label">FC Surcharge<span class="formula">units × FC rate</span></div><span class="value" id="oFC">—</span></div>
+      <div class="out-row"><div class="label">N.J. Surcharge</div><span class="value" id="oNJ">—</span></div>
+      <div class="out-row alt"><div class="label">GST</div><span class="value" id="oGST">—</span></div>
+      <div class="out-row"><div class="label">Further Tax</div><span class="value" id="oFT">—</span></div>
+      <div class="out-row alt"><div class="label">Extra Tax</div><span class="value" id="oET">—</span></div>
+      <div class="out-row"><div class="label">Income Tax</div><span class="value" id="oIT">—</span></div>
+      <div class="out-row alt"><div class="label">Electricity Duty</div><span class="value" id="oEDuty">—</span></div>
+      <div class="out-row"><div class="label">TV Fee</div><span class="value" id="oTV">—</span></div>
+      <div class="out-row alt"><div class="label">Taxes on FPA<span class="formula">FPA × (GST+IT+FT+ET)</span></div><span class="value" id="oFPATax">—</span></div>
+      <div class="out-row subtotal"><div class="label">Government Subtotal</div><span class="value" id="oGovSub">—</span></div>
+    </div>
+
+    <div class="panel">
+      <h2>Final Bill</h2>
+      <div class="out-row grand"><div class="label">Payable Within Due Date</div><span class="value" id="oPayable">—</span></div>
+      <div class="out-row late"><div class="label">+ LPS (within window)</div><span class="value" id="oLPS1">—</span></div>
+      <div class="out-row alt"><div class="label">Payable Till early-window</div><span class="value" id="oPayableEarly">—</span></div>
+      <div class="out-row late"><div class="label">+ LPS (after window)</div><span class="value" id="oLPS2">—</span></div>
+      <div class="out-row subtotal"><div class="label">Payable After Window</div><span class="value" id="oPayableLate">—</span></div>
+
+      <div class="compare">
+        <div><div class="lbl">Calculator</div><div class="val" id="cmpCalc">—</div></div>
+        <div><div class="lbl">Sample Bill (B2b)</div><div class="val" style="color:var(--muted)">339,495</div></div>
+        <div><div class="lbl">Difference</div><div class="val diff" id="cmpDiff">—</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<details>
+  <summary>📐 Formulas reference (all categories)</summary>
+  <div class="formulas">
+<strong style="color:var(--accent)">A. ENERGY CHARGES (depends on tariff method)</strong>
+  <code>Slab</code>:    sum of (units_in_slab × slab_rate) for each slab
+  <code>Flat</code>:    total_units × flat_rate
+  <code>ToU</code>:     OP_units × OP_rate + PK_units × PK_rate
+
+<strong style="color:var(--accent)">B. FIXED CHARGES (depends on tariff)</strong>
+  <code>Per phase</code>: Rs 75 (1-φ) / Rs 150 (3-φ)        [residential]
+  <code>Flat</code>:      Rs 1000 / 2000 / 50000 etc.       [other]
+  <code>Per MDI kW</code>: MDI × Rs 1250                     [B2b/B3/B4 industrial]
+
+<strong style="color:var(--accent)">C. ADJUSTMENTS</strong>
+  <code>VarFPA = prev_month_units × notified_FPA_rate</code>  (back-billed)
+  <code>QTA = current_units × QTA_rate</code>                 (quarterly)
+
+<strong style="color:var(--accent)">D. TAX BASE &amp; GOVT CHARGES</strong>
+  <code>FC_Surch = units × Rs 3.23</code>
+  <code>NJ_Surch = units × NJ_rate</code>
+  <code>TaxBase  = Energy + Fixed + QTA + FC_Surch</code>   (VarFPA excluded)
+  <code>GST = TaxBase × 18%</code>
+  <code>Further Tax = TaxBase × 4%</code>
+  <code>Extra Tax = TaxBase × 17%</code>
+  <code>Income Tax = TaxBase × IT%</code>
+  <code>FPA_Taxes = VarFPA × (GST% + IT% + FT% + ET%)</code>
+
+<strong style="color:var(--accent)">E. TOTAL</strong>
+  <code>Payable = IESCO + Govt</code>
+  <code>AfterDue = Payable × (1 + LPS%)</code>
+  </div>
+</details>
+
+<details>
+  <summary>🔌 Tariff category quick reference</summary>
+  <div class="formulas">
+<strong style="color:var(--accent)">Residential</strong>
+  A-1a Lifeline:        ≤50 units in 6 months → very low slab rates
+  A-1a Protected:       ≤200 units last 6 months → reduced slabs
+  A-1a Non-Protected:   regular slabs Rs 16.48 → Rs 48.84
+  A-1b ToU:             must opt in; Peak Rs ~48 / Off-Peak Rs ~41.68
+
+<strong style="color:var(--accent)">Commercial / Services</strong>
+  A-2a:  load ≤5 kW · single rate
+  A-2b:  load &gt;5 kW · ToU mandatory
+  A-3:   General Services (offices, mosques, hospitals etc.)
+
+<strong style="color:var(--accent)">Industrial (peak windows)</strong>
+  Winter (Nov–Mar): peak 17:00–21:00
+  Summer (Apr–Oct): peak 18:00–22:00
+  B-1:  ≤25 kW         · flat or ToU
+  B-2:  25–500 kW      · flat or ToU (your bill)
+  B-3:  ≤5000 kW @ 11/33 kV  · ToU only
+  B-4:  all loads @ 66/132 kV+ · ToU only
+
+<strong style="color:var(--accent)">Agriculture</strong>
+  D-1:  Tubewells flat
+  D-2:  ToU
+  </div>
+</details>
+
+<script>
+// ============================================================
+// TARIFF CONFIG · all rates editable, defaults from NEPRA SoT
+// FY 2025-26 approximate values — update via "Load Default Rates"
+// ============================================================
+const TARIFFS = {
+  A1_LIFELINE: {
+    name: "A-1a Lifeline (Protected ≤50 units)",
+    method: "slab",
+    slabs: [{ to: 50, rate: 3.95, label: "Up to 50 units" }],
+    fixed: { type: "phase", single: 0, three: 0 },
+    note: "Protected lifeline — ≤50 units/month for 6 consecutive months. TV fee Rs 35 typically applies.",
+    taxIT: 0, taxET: 0, taxFT: 0, fcRate: 0, tvFee: 0
+  },
+  A1_PROTECTED: {
+    name: "A-1a Protected (≤200 units)",
+    method: "slab",
+    slabs: [
+      { to: 100, rate: 13.48, label: "Up to 100 units" },
+      { to: 200, rate: 18.95, label: "101–200 units" }
+    ],
+    fixed: { type: "phase", single: 0, three: 0 },
+    note: "Protected — ≤200 units/month for last 6 months. Below regular slabs.",
+    taxIT: 0, taxET: 0, taxFT: 0, fcRate: 0, tvFee: 35
+  },
+  A1_NON_PROTECTED: {
+    name: "A-1a Non-Protected (Slab)",
+    method: "slab",
+    slabs: [
+      { to: 100, rate: 16.48, label: "Up to 100 units" },
+      { to: 200, rate: 22.95, label: "101–200 units" },
+      { to: 300, rate: 27.14, label: "201–300 units" },
+      { to: 400, rate: 32.03, label: "301–400 units" },
+      { to: 500, rate: 34.24, label: "401–500 units" },
+      { to: 600, rate: 35.78, label: "501–600 units" },
+      { to: 700, rate: 37.80, label: "601–700 units" },
+      { to: Infinity, rate: 48.84, label: "Above 700 units" }
+    ],
+    fixed: { type: "phase", single: 75, three: 150 },
+    note: "Standard residential. NEPRA slab tariff — incremental. Fixed charges by phase.",
+    taxIT: 7.5, taxET: 0, taxFT: 0, fcRate: 3.23, tvFee: 35
+  },
+  A1_TOU: {
+    name: "A-1b ToU Residential",
+    method: "tou",
+    rOP: 41.68, rPK: 48.00,
+    fixed: { type: "fixed", amount: 1000 },
+    showMDI: false,
+    note: "Optional ToU for residential ≥5 kW load. Peak winter 17–21, summer 18–22.",
+    taxIT: 7.5, taxET: 0, taxFT: 0, fcRate: 3.23, tvFee: 35
+  },
+  A2_FLAT: {
+    name: "A-2a Commercial Flat (≤5 kW)",
+    method: "flat",
+    rate: 41.79,
+    fixed: { type: "fixed", amount: 500 },
+    note: "Single rate for small commercial connections.",
+    taxIT: 5, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  },
+  A2_TOU: {
+    name: "A-2b Commercial ToU (>5 kW)",
+    method: "tou",
+    rOP: 36.85, rPK: 46.85,
+    fixed: { type: "fixed", amount: 500 },
+    showMDI: false,
+    note: "ToU mandatory for commercial >5 kW load.",
+    taxIT: 5, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  },
+  A3: {
+    name: "A-3 General Services",
+    method: "flat",
+    rate: 36.65,
+    fixed: { type: "fixed", amount: 500 },
+    note: "Offices, mosques, hospitals, schools etc. Single rate.",
+    taxIT: 0, taxET: 0, taxFT: 0, fcRate: 3.23, tvFee: 0
+  },
+  B1_FLAT: {
+    name: "B-1 Industrial Flat (≤25 kW)",
+    method: "flat",
+    rate: 32.07,
+    fixed: { type: "fixed", amount: 1000 },
+    note: "Small industrial. No MDI, no ToU.",
+    taxIT: 7.5, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  },
+  B1_TOU: {
+    name: "B-1b Industrial ToU (≤25 kW)",
+    method: "tou",
+    rOP: 27.41, rPK: 36.68,
+    fixed: { type: "fixed", amount: 1000 },
+    showMDI: false,
+    note: "Optional ToU for small industrial.",
+    taxIT: 7.5, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  },
+  B2_FLAT: {
+    name: "B-2 Industrial Flat (25–500 kW)",
+    method: "flat",
+    rate: 30.00,
+    fixed: { type: "fixed", amount: 2000 },
+    note: "Mid-industrial without ToU meter.",
+    taxIT: 7.35, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  },
+  B2_TOU: {
+    name: "B-2b(12)T Industrial ToU (25–500 kW)",
+    method: "tou",
+    rOP: 27.41, rPK: 36.68,
+    fixed: { type: "perMDI", rate: 1250 },
+    showMDI: true,
+    note: "YOUR BILL'S TARIFF. Fixed charges = MDI × Rs 1,250/kW.",
+    taxIT: 7.35, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  },
+  B3_TOU: {
+    name: "B-3 Industrial ToU (≤5000 kW @ 11/33 kV)",
+    method: "tou",
+    rOP: 25.21, rPK: 34.40,
+    fixed: { type: "perMDI", rate: 1250 },
+    showMDI: true,
+    note: "HT industrial. Lower rates, ToU mandatory.",
+    taxIT: 7.35, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  },
+  B4_TOU: {
+    name: "B-4 Industrial ToU (all loads @ 66/132 kV+)",
+    method: "tou",
+    rOP: 23.72, rPK: 32.49,
+    fixed: { type: "perMDI", rate: 1250 },
+    showMDI: true,
+    note: "EHT industrial. Lowest rates.",
+    taxIT: 7.35, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  },
+  D1: {
+    name: "D-1 Agriculture (Tubewells)",
+    method: "flat",
+    rate: 26.00,
+    fixed: { type: "fixed", amount: 200 },
+    note: "Subsidized agricultural rate.",
+    taxIT: 0, taxET: 0, taxFT: 0, fcRate: 0, tvFee: 0
+  },
+  D2_TOU: {
+    name: "D-2 Agriculture ToU",
+    method: "tou",
+    rOP: 22.0, rPK: 30.0,
+    fixed: { type: "fixed", amount: 200 },
+    showMDI: false,
+    note: "Optional ToU for agriculture.",
+    taxIT: 0, taxET: 0, taxFT: 0, fcRate: 0, tvFee: 0
+  },
+  G: {
+    name: "G — Public Lighting",
+    method: "flat",
+    rate: 44.06,
+    fixed: { type: "fixed", amount: 0 },
+    note: "Street lighting (govt accounts).",
+    taxIT: 0, taxET: 0, taxFT: 0, fcRate: 3.23, tvFee: 0
+  },
+  TEMP: {
+    name: "Temporary Supply",
+    method: "flat",
+    rate: 56.00,
+    fixed: { type: "fixed", amount: 0 },
+    note: "Temporary connection — 125% of regular rate.",
+    taxIT: 7.5, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  },
+  EV: {
+    name: "EV Charging Station",
+    method: "tou",
+    rOP: 39.7, rPK: 71.1,
+    fixed: { type: "fixed", amount: 0 },
+    showMDI: false,
+    note: "Special EV charging station tariff.",
+    taxIT: 5, taxET: 17, taxFT: 4, fcRate: 3.23, tvFee: 0
+  }
+};
+
+const $ = id => document.getElementById(id);
+const num = id => parseFloat($(id)?.value) || 0;
+const fmt = v => {
+  if (v === null || isNaN(v)) return '—';
+  const sign = v < 0 ? '−' : '';
+  return sign + Math.abs(v).toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+const fmtInt = v => isNaN(v) ? '—' : Math.round(v).toLocaleString('en-PK');
+
+let activeTariff = TARIFFS.B2_TOU;
+let activeKey = "B2_TOU";
+
+function setCell(id, v) {
+  const el = $(id);
+  if (!el) return;
+  el.textContent = fmt(v);
+  el.className = 'value' + (v < 0 ? ' negative' : '');
+}
+
+// ============================================================
+// UI MANAGEMENT — show/hide fields based on tariff method
+// ============================================================
+function onTariffChange() {
+  activeKey = $('tariffSelect').value;
+  activeTariff = TARIFFS[activeKey];
+  loadDefaults();
+}
+
+function loadDefaults() {
+  const t = activeTariff;
+  // Update category info
+  $('catInfo').innerHTML = `<strong>${t.name}</strong> · ${t.note}`;
+  $('catPill').textContent = activeKey.replace(/_/g, '-');
+
+  // Show/hide input groups
+  const isSlab = t.method === 'slab';
+  const isFlat = t.method === 'flat';
+  const isTou  = t.method === 'tou';
+  const showMDI = !!t.showMDI;
+
+  $('slabInputs').style.display = isSlab ? '' : 'none';
+  $('flatInputs').style.display = isFlat ? '' : 'none';
+  $('touInputs').style.display  = isTou ? '' : 'none';
+  $('slabRates').style.display  = isSlab ? '' : 'none';
+  $('flatRate').style.display   = isFlat ? '' : 'none';
+  $('touRates').style.display   = isTou ? '' : 'none';
+  $('mdiRow').style.display     = (isTou && showMDI) ? '' : 'none';
+
+  // Fixed charge UI
+  if (t.fixed.type === 'perMDI') {
+    $('fixedFlatRow').style.display = 'none';
+    $('fixedMdiRow').style.display = '';
+    $('rFixedKw').value = t.fixed.rate;
+  } else {
+    $('fixedFlatRow').style.display = '';
+    $('fixedMdiRow').style.display = 'none';
+    if (t.fixed.type === 'phase') {
+      const ph = $('phase').value;
+      $('rFixedAmt').value = ph === 'three' ? t.fixed.three : t.fixed.single;
+      $('fixedHint').textContent = `single Rs ${t.fixed.single} · three-phase Rs ${t.fixed.three}`;
+    } else {
+      $('rFixedAmt').value = t.fixed.amount;
+      $('fixedHint').textContent = 'fixed monthly amount';
+    }
+  }
+
+  // Load tariff-specific rates
+  if (isFlat) $('rFlat').value = t.rate;
+  if (isTou)  { $('rOP').value = t.rOP; $('rPK').value = t.rPK; }
+  if (isSlab) renderSlabTable(t.slabs);
+
+  // Load category-specific tax defaults (user can override)
+  $('rIT').value = t.taxIT;
+  $('rET').value = t.taxET;
+  $('rFT').value = t.taxFT;
+  $('rFC').value = t.fcRate;
+  $('rTV').value = t.tvFee;
+
+  calculate();
+}
+
+function renderSlabTable(slabs) {
+  const html = slabs.map((s, i) => `
+    <div class="slab-row">
+      <div class="slab-label">${s.label || ('Slab ' + (i+1))}</div>
+      <input type="number" step="any" id="slabTo_${i}" value="${s.to === Infinity ? '999999' : s.to}" placeholder="upTo">
+      <input type="number" step="any" id="slabRate_${i}" value="${s.rate}" placeholder="rate">
+    </div>
+  `).join('');
+  $('slabTable').innerHTML = html;
+  // wire up change events
+  document.querySelectorAll('#slabTable input').forEach(i => i.addEventListener('input', calculate));
+}
+
+function getSlabsFromUI() {
+  const slabs = activeTariff.slabs.map((_, i) => ({
+    to: num(`slabTo_${i}`) || Infinity,
+    rate: num(`slabRate_${i}`)
+  }));
+  return slabs;
+}
+
+// ============================================================
+// CALCULATION — works across all tariff methods
+// ============================================================
+function calculate() {
+  const t = activeTariff;
+  let energy = 0, totalU = 0, breakdown = '';
+
+  if (t.method === 'slab') {
+    totalU = num('totalUnits');
+    const slabs = getSlabsFromUI();
+    let prev = 0;
+    let remaining = totalU;
+    breakdown = '';
+    for (let i = 0; i < slabs.length && remaining > 0; i++) {
+      const cap = slabs[i].to;
+      const span = (cap === Infinity || cap > totalU) ? remaining : Math.min(remaining, cap - prev);
+      const cost = span * slabs[i].rate;
+      energy += cost;
+      breakdown += `<div class="out-row"><div class="label">${activeTariff.slabs[i].label || ('Slab ' + (i+1))}<span class="formula">${span.toFixed(0)} kWh × ${slabs[i].rate}</span></div><span class="value">${fmt(cost)}</span></div>`;
+      remaining -= span;
+      prev = cap;
+    }
+  } else if (t.method === 'flat') {
+    totalU = num('flatUnits');
+    const r = num('rFlat');
+    energy = totalU * r;
+    breakdown = `<div class="out-row"><div class="label">Flat energy<span class="formula">${totalU} × ${r}</span></div><span class="value">${fmt(energy)}</span></div>`;
+  } else if (t.method === 'tou') {
+    const opU = num('opUnits'), pkU = num('pkUnits');
+    totalU = opU + pkU;
+    const rOP = num('rOP'), rPK = num('rPK');
+    const eOP = opU * rOP, ePK = pkU * rPK;
+    energy = eOP + ePK;
+    breakdown = `
+      <div class="out-row"><div class="label">Off-peak energy<span class="formula">${opU} × ${rOP}</span></div><span class="value">${fmt(eOP)}</span></div>
+      <div class="out-row alt"><div class="label">Peak energy<span class="formula">${pkU} × ${rPK}</span></div><span class="value">${fmt(ePK)}</span></div>
+    `;
+  }
+  $('energyBreakdown').innerHTML = breakdown;
+
+  // Fixed charges
+  let fixed = 0, fixedFormula = '';
+  if (t.fixed.type === 'perMDI') {
+    const mdi = num('mdi');
+    fixed = mdi * num('rFixedKw');
+    fixedFormula = `MDI ${mdi} kW × Rs ${num('rFixedKw')}`;
+  } else {
+    fixed = num('rFixedAmt');
+    fixedFormula = t.fixed.type === 'phase' ? `${$('phase').value}-phase fixed` : 'monthly fixed';
+  }
+  $('fixedFormula').textContent = fixedFormula;
+
+  // FPA & QTA
+  const prevU = num('prevUnits');
+  const rFPA = num('rFPA');
+  const rQTA = num('rQTA');
+  const varFPA = prevU * rFPA;
+  const qta = totalU * rQTA;
+  const iescoSub = energy + fixed + varFPA + qta;
+
+  // Surcharges & Taxes
+  const rFC = num('rFC'), rNJ = num('rNJ');
+  const rGST = num('rGST') / 100, rFT = num('rFT') / 100;
+  const rET  = num('rET') / 100,  rIT = num('rIT') / 100;
+  const rED  = num('rED') / 100;
+  const tvFee = num('rTV');
+  const rLPS1 = num('rLPS1') / 100, rLPS2 = num('rLPS2') / 100;
+  const taxFPA = $('taxFPA').checked;
+
+  const fc = totalU * rFC;
+  const nj = totalU * rNJ;
+  const taxBase = energy + fixed + qta + fc;
+  const gst = taxBase * rGST;
+  const ft  = taxBase * rFT;
+  const et  = taxBase * rET;
+  const it  = taxBase * rIT;
+  const eDuty = energy * rED;
+  const fpaTax = taxFPA ? varFPA * (rGST + rIT + rFT + rET) : 0;
+  const govSub = fc + nj + gst + ft + et + it + eDuty + tvFee + fpaTax;
+
+  const payable = iescoSub + govSub;
+  const lps1 = payable * rLPS1;
+  const lps2 = payable * rLPS2;
+
+  // Render outputs
+  setCell('oEnergy', energy);
+  setCell('oFixed', fixed);
+  setCell('oVarFPA', varFPA);
+  setCell('oQTA', qta);
+  setCell('oIescoSub', iescoSub);
+  setCell('oTaxBase', taxBase);
+  setCell('oFC', fc);
+  setCell('oNJ', nj);
+  setCell('oGST', gst);
+  setCell('oFT', ft);
+  setCell('oET', et);
+  setCell('oIT', it);
+  setCell('oEDuty', eDuty);
+  setCell('oTV', tvFee);
+  setCell('oFPATax', fpaTax);
+  setCell('oGovSub', govSub);
+  setCell('oPayable', payable);
+  setCell('oLPS1', lps1);
+  setCell('oPayableEarly', payable + lps1);
+  setCell('oLPS2', lps2);
+  setCell('oPayableLate', payable + lps2);
+
+  // Compare to sample bill (only meaningful for B2_TOU with sample data)
+  $('cmpCalc').textContent = fmtInt(payable);
+  const actual = 339495;
+  const diff = payable - actual;
+  const diffEl = $('cmpDiff');
+  diffEl.textContent = (diff >= 0 ? '+' : '−') + fmtInt(Math.abs(diff));
+  const isMatch = activeKey === 'B2_TOU' && Math.abs(diff) < 200;
+  diffEl.className = 'val diff ' + (isMatch ? 'ok' : 'bad');
+
+  $('status').innerHTML = isMatch
+    ? `<span class="pill match">MATCHES SAMPLE BILL</span> <span class="pill cat">${activeKey.replace(/_/g, '-')}</span>`
+    : `<span class="pill cat">${activeKey.replace(/_/g, '-')}</span>`;
+}
+
+function loadSampleBill() {
+  $('tariffSelect').value = 'B2_TOU';
+  onTariffChange();
+  $('opUnits').value = 3882;
+  $('pkUnits').value = 1727;
+  $('mdi').value = 43;
+  $('prevUnits').value = 10843;
+  $('rOP').value = 27.41;
+  $('rPK').value = 36.68;
+  $('rFixedKw').value = 1250;
+  $('rFPA').value = -0.4812;
+  $('rQTA').value = -0.7918;
+  $('rFC').value = 3.23;
+  $('rGST').value = 18; $('rFT').value = 4; $('rET').value = 17; $('rIT').value = 7.35;
+  $('rTV').value = 0;
+  $('rLPS1').value = 3.49; $('rLPS2').value = 6.99;
+  calculate();
+}
+
+// Wire up live recalculation for all inputs
+document.addEventListener('input', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') calculate();
+});
+$('phase').addEventListener('change', () => {
+  if (activeTariff.fixed.type === 'phase') {
+    $('rFixedAmt').value = $('phase').value === 'three' ? activeTariff.fixed.three : activeTariff.fixed.single;
+  }
+  calculate();
+});
+
+// Initial load
+onTariffChange();
+</script>
+</body>
+</html>

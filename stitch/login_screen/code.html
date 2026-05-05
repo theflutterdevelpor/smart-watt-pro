@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Energy Suite - Welcome Back</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-primary": "#004cec",
+                    "error-container": "#93000a",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "surface-container-highest": "#2d3449",
+                    "primary-container": "#1d5aff",
+                    "surface-container-lowest": "#060e20",
+                    "on-surface": "#dae2fd",
+                    "on-primary-fixed-variant": "#0038b6",
+                    "surface-container-low": "#131b2e",
+                    "tertiary-fixed": "#e2e2e2",
+                    "tertiary-container": "#6a6c6c",
+                    "on-secondary-fixed-variant": "#364e00",
+                    "background": "#0b1326",
+                    "on-secondary": "#243600",
+                    "outline-variant": "#434656",
+                    "on-background": "#dae2fd",
+                    "outline": "#8d90a2",
+                    "on-secondary-container": "#243600",
+                    "primary": "#b7c4ff",
+                    "on-secondary-fixed": "#131f00",
+                    "on-primary": "#002682",
+                    "on-primary-fixed": "#001552",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary": "#2f3131",
+                    "surface-container-high": "#222a3d",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "inverse-surface": "#dae2fd",
+                    "surface": "#0b1326",
+                    "primary-fixed": "#dce1ff",
+                    "inverse-on-surface": "#283044",
+                    "primary-fixed-dim": "#b7c4ff",
+                    "on-surface-variant": "#c3c5d9",
+                    "secondary-fixed-dim": "#a3d73e",
+                    "surface-dim": "#0b1326",
+                    "secondary-fixed": "#bef458",
+                    "surface-variant": "#2d3449",
+                    "tertiary": "#c6c6c7",
+                    "surface-container": "#171f33",
+                    "surface-bright": "#31394d",
+                    "secondary": "#a3d73e",
+                    "on-primary-container": "#ebecff",
+                    "secondary-container": "#77a700",
+                    "error": "#ffb4ab",
+                    "surface-tint": "#b7c4ff",
+                    "on-tertiary-container": "#eeeeee"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "lg": "40px",
+                    "sm": "12px",
+                    "base": "8px",
+                    "xl": "64px",
+                    "md": "24px",
+                    "margin": "32px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "display-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(11, 19, 38, 0.65);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .etched-input {
+            background: rgba(6, 14, 32, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-button {
+            box-shadow: 0 0 20px rgba(29, 90, 255, 0.4);
+        }
+        .glow-button:hover {
+            box-shadow: 0 0 35px rgba(29, 90, 255, 0.6);
+        }
+        .atmospheric-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 100%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.4;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex items-center justify-center p-gutter font-body-md overflow-hidden">
+<!-- Atmospheric Background Elements -->
+<div class="atmospheric-glow bg-primary-container top-[-200px] left-[-100px]"></div>
+<div class="atmospheric-glow bg-secondary-container bottom-[-200px] right-[-100px]"></div>
+<main class="w-full max-w-[480px] z-10">
+<!-- Brand Identity (Derived from TopAppBar JSON) -->
+<div class="flex flex-col items-center mb-margin">
+<div class="w-16 h-16 rounded-full bg-slate-900/65 backdrop-blur-[20px] border border-white/15 flex items-center justify-center shadow-[0_8px_32px_0_rgba(29,90,255,0.2)] mb-sm">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="bolt" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<h1 class="font-display-lg text-display-lg tracking-tight text-on-surface">Energy Suite</h1>
+</div>
+<!-- Login Container -->
+<div class="glass-card rounded-lg p-lg shadow-[0_20px_50px_rgba(29,90,255,0.15)] relative overflow-hidden">
+<!-- Glass Highlight Inner Border -->
+<div class="absolute inset-0 border border-white/5 rounded-lg pointer-events-none"></div>
+<header class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Welcome Back</h2>
+<p class="font-body-md text-body-md text-outline">Manage your efficiency with Illuminated Clarity.</p>
+</header>
+<form class="space-y-md">
+<!-- Email Field -->
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant block px-xs">Email Address</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline group-focus-within:text-primary transition-colors duration-300" data-icon="mail">mail</span>
+</div>
+<input class="etched-input w-full pl-xl pr-md py-md rounded-DEFAULT text-on-surface placeholder:text-outline/50 focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-all duration-300" placeholder="name@company.com" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-xs">
+<div class="flex justify-between items-center px-xs">
+<label class="font-label-md text-label-md text-on-surface-variant block">Password</label>
+<a class="font-label-sm text-label-sm text-primary hover:text-primary-fixed transition-colors" href="#">Forgot Password?</a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline group-focus-within:text-primary transition-colors duration-300" data-icon="lock">lock</span>
+</div>
+<input class="etched-input w-full pl-xl pr-md py-md rounded-DEFAULT text-on-surface placeholder:text-outline/50 focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-all duration-300" placeholder="••••••••" type="password"/>
+<div class="absolute inset-y-0 right-0 pr-md flex items-center">
+<button class="text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Login Button -->
+<button class="w-full bg-primary-container text-on-primary-container font-headline-md text-headline-md py-md rounded-DEFAULT glow-button active:scale-95 transition-all duration-300 flex items-center justify-center gap-base mt-lg" type="submit">
+                    Login
+                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<!-- Social Logins -->
+<div class="mt-xl">
+<div class="relative flex items-center mb-lg">
+<div class="flex-grow border-t border-white/10"></div>
+<span class="flex-shrink mx-md font-label-sm text-label-sm text-outline">OR CONTINUE WITH</span>
+<div class="flex-grow border-t border-white/10"></div>
+</div>
+<div class="grid grid-cols-3 gap-md">
+<!-- Google -->
+<button class="glass-card hover:bg-white/10 transition-all duration-300 py-md rounded-DEFAULT flex items-center justify-center active:scale-90">
+<img alt="Google" class="w-6 h-6" data-alt="A clean, high-resolution Google logo centered on a transparent background, following the minimalist and professional visual language of the Energy Suite interface. The lighting is neutral and the colors are vibrant, ensuring it stands out against the dark, glassmorphic UI background of the login card." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsZn1_vDhGoD_rDgxLQ4lRoIA3NaZ2TCeyHhjzeT1sAXbMn34z50pCQG9NGUsfSHmP1M33IW-OSxmyiKGC3USHnxfiY_TV0tb_3fNrhW1GSEai2MIHMLNzTrYa2nNOY4AQ12hwzF0zEw4kJQm7dktg6i_9ujognD54AGljMI4NeStIfbpdFA_JLeRlZxFEnsyccDU-MThMdpzFnrFsWHkHAFGiAlhArm7BpUsjykEqjcSYLFKr_f3oyW9tJVt9UJjBaz0BJSZnPx8"/>
+</button>
+<!-- Microsoft -->
+<button class="glass-card hover:bg-white/10 transition-all duration-300 py-md rounded-DEFAULT flex items-center justify-center active:scale-90">
+<span class="material-symbols-outlined text-on-surface" data-icon="grid_view" data-weight="fill" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+</button>
+<!-- Fingerprint/SSO -->
+<button class="glass-card hover:bg-white/10 transition-all duration-300 py-md rounded-DEFAULT flex items-center justify-center active:scale-90">
+<span class="material-symbols-outlined text-primary" data-icon="fingerprint">fingerprint</span>
+</button>
+</div>
+</div>
+<!-- Sign Up Footer -->
+<footer class="mt-xl text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Don't have an account? 
+                    <a class="text-secondary font-bold hover:underline underline-offset-4" href="#">Request Access</a>
+</p>
+</footer>
+</div>
+<!-- System Status Bar (Bottom Decorative) -->
+<div class="mt-lg flex justify-between items-center px-md text-outline font-label-sm text-label-sm">
+<div class="flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
+                SYSTEMS OPERATIONAL
+            </div>
+<div>V2.4.0-STABLE</div>
+</div>
+</main>
+<!-- Background Imagery (Bento Inspired Floating Elements) -->
+<div class="fixed top-20 right-20 w-64 h-64 opacity-20 pointer-events-none rotate-12">
+<img class="w-full h-full object-cover rounded-xl" data-alt="Close-up macro photography of high-tech circuit boards with glowing electric blue and lime green LED tracers. The lighting is dramatic and moody, reflecting off the dark metallic surfaces. The image captures the essence of sophisticated energy management and digital precision, aligning with the dark-mode aesthetic of the Energy Suite dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA93s7wTUA07ogEbecTIWn8Zqy-QgI6k0frn_xLpe5eq4BDGTmVHM13nml_xM-j6e2uKwsiY9usmUNBYOysK0LLBCGhzQW3zndCOVbdTKqJNvi_jVnaJFte6F2yDAy0QrAVzXILoLVE7ZorHI9GYyo7W4pob2vG0YNGV5T7x_oajwCUSHxexydAUotAuL5YDskToYAenUF-lAJdW9x8sxKrvNEObvu21PhE43h4HT_OW02JWd-hbCW_2rUK_DJpP9adrdo8BA0DjQg"/>
+</div>
+<div class="fixed bottom-20 left-20 w-80 h-48 opacity-10 pointer-events-none -rotate-6">
+<img class="w-full h-full object-cover rounded-xl" data-alt="A stunning digital representation of a planetary energy grid seen from space, featuring luminous blue data streams connecting major global hubs. The aesthetic is futuristic and high-end, utilizing deep blacks and vibrant neon highlights. The mood is one of global connectivity and high-performance technology, echoing the illuminated clarity design philosophy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFRvtUjdZyVGIHxX6E7rVLhwKRchHglvt1tO4D-EmnzIhr8uPm4I45MnkWFAB0UHP17H7gnVEhq5R7d35CUV9LC3-1W9HYVpkhcMNjqeAhY_Uaes5ztM2vbjziZJIFqCKMlChiW4xLmcL5FvFNvbpQyhoQfgLDlMR6dujpyQykDFcmGM5mGFCGJp_bJGkDKbKcoPpimECmIpU7SHQEtt-8utRV3QyukVg3wrTVAV-3KZa5XgSWCg49tSuvxJrel1Hi6Asexpyub6U"/>
+</div>
+</body></html>

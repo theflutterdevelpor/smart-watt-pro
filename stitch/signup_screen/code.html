@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Account | Energy Suite</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#004cec",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "surface-container-highest": "#2d3449",
+                        "primary-container": "#1d5aff",
+                        "surface-container-lowest": "#060e20",
+                        "on-surface": "#dae2fd",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "surface-container-low": "#131b2e",
+                        "tertiary-fixed": "#e2e2e2",
+                        "tertiary-container": "#6a6c6c",
+                        "on-secondary-fixed-variant": "#364e00",
+                        "background": "#0b1326",
+                        "on-secondary": "#243600",
+                        "outline-variant": "#434656",
+                        "on-background": "#dae2fd",
+                        "outline": "#8d90a2",
+                        "on-secondary-container": "#243600",
+                        "primary": "#b7c4ff",
+                        "on-secondary-fixed": "#131f00",
+                        "on-primary": "#002682",
+                        "on-primary-fixed": "#001552",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary": "#2f3131",
+                        "surface-container-high": "#222a3d",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "inverse-surface": "#dae2fd",
+                        "surface": "#0b1326",
+                        "primary-fixed": "#dce1ff",
+                        "inverse-on-surface": "#283044",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-surface-variant": "#c3c5d9",
+                        "secondary-fixed-dim": "#a3d73e",
+                        "surface-dim": "#0b1326",
+                        "secondary-fixed": "#bef458",
+                        "surface-variant": "#2d3449",
+                        "tertiary": "#c6c6c7",
+                        "surface-container": "#171f33",
+                        "surface-bright": "#31394d",
+                        "secondary": "#a3d73e",
+                        "on-primary-container": "#ebecff",
+                        "secondary-container": "#77a700",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#b7c4ff",
+                        "on-tertiary-container": "#eeeeee"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "lg": "40px",
+                        "sm": "12px",
+                        "base": "8px",
+                        "xl": "64px",
+                        "md": "24px",
+                        "margin": "32px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(11, 19, 38, 0.65);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 15px rgba(29, 90, 255, 0.1);
+        }
+        .glass-input {
+            background: rgba(6, 14, 32, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            background: rgba(6, 14, 32, 0.8);
+            border-color: #1d5aff;
+            box-shadow: 0 0 10px rgba(29, 90, 255, 0.3);
+            outline: none;
+        }
+        .bg-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(29, 90, 255, 0.15) 0%, transparent 70%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen relative overflow-x-hidden selection:bg-primary-container selection:text-white">
+<!-- Atmospheric Background Elements -->
+<div class="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<main class="min-h-screen flex items-center justify-center p-gutter relative z-10">
+<div class="w-full max-w-[1200px] grid grid-cols-1 lg:grid-cols-12 gap-xl items-center">
+<!-- Branding/Value Proposition Section -->
+<div class="lg:col-span-5 hidden lg:block space-y-md">
+<div class="inline-flex items-center gap-sm px-md py-xs rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
+<span class="material-symbols-outlined text-secondary" data-icon="bolt">bolt</span>
+<span class="font-label-sm text-secondary uppercase tracking-widest">Next-Gen Energy Management</span>
+</div>
+<h1 class="font-display-lg text-on-surface leading-tight">
+                    Empower your <br/><span class="text-primary-container">sustainable</span> future.
+                </h1>
+<p class="font-body-lg text-outline max-w-md">
+                    Join thousands of users optimizing their energy footprint with high-precision analytics and real-time smart meter monitoring.
+                </p>
+<div class="pt-md grid grid-cols-2 gap-md">
+<div class="glass-card p-md rounded-lg">
+<p class="font-headline-md text-primary-container">24/7</p>
+<p class="font-label-sm text-outline">Monitoring</p>
+</div>
+<div class="glass-card p-md rounded-lg">
+<p class="font-headline-md text-secondary">15%</p>
+<p class="font-label-sm text-outline">Avg. Savings</p>
+</div>
+</div>
+</div>
+<!-- Signup Form Section -->
+<div class="lg:col-span-7 flex justify-center">
+<div class="glass-card w-full max-w-[540px] p-xl rounded-lg relative overflow-hidden">
+<!-- Subtle Glow Overlay -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl pointer-events-none"></div>
+<header class="mb-xl text-center lg:text-left">
+<h2 class="font-headline-lg text-on-surface mb-xs">Create Account</h2>
+<p class="font-body-md text-outline">Start your journey with Energy Suite today.</p>
+</header>
+<form class="space-y-md" onsubmit="return false;">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="space-y-xs">
+<label class="font-label-md text-on-surface-variant px-xs">Full Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]" data-icon="person">person</span>
+<input class="glass-input w-full h-14 pl-12 pr-4 rounded-full font-body-md text-on-surface placeholder:text-outline/50" placeholder="John Doe" type="text"/>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-md text-on-surface-variant px-xs">Phone Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]" data-icon="call">call</span>
+<input class="glass-input w-full h-14 pl-12 pr-4 rounded-full font-body-md text-on-surface placeholder:text-outline/50" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-md text-on-surface-variant px-xs">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]" data-icon="mail">mail</span>
+<input class="glass-input w-full h-14 pl-12 pr-4 rounded-full font-body-md text-on-surface placeholder:text-outline/50" placeholder="name@company.com" type="email"/>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-md text-on-surface-variant px-xs">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]" data-icon="lock">lock</span>
+<input class="glass-input w-full h-14 pl-12 pr-12 rounded-full font-body-md text-on-surface placeholder:text-outline/50" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-sm pt-xs">
+<input class="w-5 h-5 rounded border-white/15 bg-white/5 text-primary-container focus:ring-primary-container transition-all" id="terms" type="checkbox"/>
+<label class="font-label-sm text-outline" for="terms">
+                                I agree to the <a class="text-primary hover:underline" href="#">Terms of Service</a> and <a class="text-primary hover:underline" href="#">Privacy Policy</a>.
+                            </label>
+</div>
+<button class="w-full h-14 bg-primary-container text-white font-label-md uppercase tracking-widest rounded-full shadow-[0_8px_24px_rgba(29,90,255,0.4)] hover:shadow-[0_12px_32px_rgba(29,90,255,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 mt-md" type="submit">
+                            Create Account
+                        </button>
+</form>
+<div class="mt-xl pt-md border-t border-white/10 flex flex-col items-center gap-md">
+<p class="font-label-sm text-outline">Or sign up with</p>
+<div class="flex gap-md">
+<button class="glass-card p-3 rounded-full hover:bg-white/10 transition-all">
+<img alt="Google" class="w-6 h-6" data-alt="A clean, minimalist representation of the Google brand logo isolated on a transparent background, following a modern tech-forward visual style with vibrant primary colors and professional geometric precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj5yDCWcBng9MngMpzBJ2LeSYLKaUPNHG3zPCQmebv8nU-0CD9cF2sVz-xqgNT5EXDT3DnuIuC_xQNlTrC5kKWZ2GAAHkzr8QCdT7muYbpL67a5H72NzKy6TAvS2utXDG6lH3z7jiPTntskBe8XfNGVtvVbm1xWNs_XV__vKiaWzXN9Xbcg6GESFmhY9VrcueyNCHVm65ThuwVCqXs1nwkNooctdKnhUWM0HA4YWGHhuwQqW6KM4J-keIJrdSCdK9wuRAP1dJJyjw"/>
+</button>
+<button class="glass-card p-3 rounded-full hover:bg-white/10 transition-all">
+<img alt="Apple" class="w-6 h-6" data-alt="The iconic Apple brand logo rendered in a sleek, monochromatic brushed silver metallic finish, conveying a sense of premium quality, technological sophistication, and minimalist elegance against a dark, textured backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_ouW_0WpO-Cvn0Oc0F_KkAE__VL8qcZxIvSNHZEXfkaSJ9eBoY2yAuse2g8IzDkYqUkXIN7dnpSjkIi5gBVGimOs9Nm6CeaCp2Svwl6S1c9n9lDxPr7zQXojDXtw3TSdLqBqxV-owGyzmK-NVgm3sLUBic8vFWN6VlmxHyqfO815FM0odVq-iGRk3RIk8_PhfFIru_wMcIoCsEgQNpm7TPihtG0aJ3NGX9dQeh_aJBgKdT0J5Am_3tGqGSNBsYOB6hY4eoANO_KU"/>
+</button>
+</div>
+<p class="font-body-md text-outline">
+                            Already have an account? <a class="text-primary font-semibold hover:underline" href="#">Log in</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Decoration -->
+<div class="fixed bottom-gutter left-gutter lg:left-xl z-20">
+<p class="font-label-sm text-white/20 tracking-tighter flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified_user">verified_user</span>
+            AES-256 ENCRYPTED INFRASTRUCTURE
+        </p>
+</div>
+</body></html>
